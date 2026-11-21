@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Адмінка KIIKO — команда</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/css/main.css?v=__BUILD__">
+<link rel="stylesheet" href="/admin/admin.css?v=__BUILD__">
+<script src="/admin/admin.js?v=__BUILD__" defer></script>
+</head>
+<body class="admin">
+<header class="adm-top">
+  <div class="container adm-top-in">
+    <a class="logo" href="/" aria-label="На сайт"><img src="/assets/img/logo-white.svg" alt="KIIKO" width="126" height="40"></a>
+    <span class="adm-badge">Адмінка</span>
+    <button class="btn btn--sm btn--ghost" type="button" data-logout hidden>Вийти</button>
+  </div>
+</header>
+
+<main class="container adm-main">
+  <section class="adm-login" data-login>
+    <h1 class="h2">Вхід</h1>
+    <p class="muted">Пароль задається в Cloudflare: проєкт kiiko-logistics → Settings → Variables and Secrets → <code>ADMIN_PASSWORD</code>.</p>
+    <form data-login-form>
+      <div class="field"><label for="pw">Пароль</label><input id="pw" type="password" autocomplete="current-password" required></div>
+      <button class="btn btn--accent" type="submit">Увійти</button>
+      <p class="adm-msg" data-login-msg role="alert"></p>
+    </form>
+  </section>
+
+  <section class="adm-editor" data-editor hidden>
+    <div class="adm-head">
+      <div>
+        <h1 class="h2">Команда</h1>
+        <p class="muted">Змініть дані та натисніть «Зберегти». Фото зберігається одразу після вибору файлу.</p>
+      </div>
+      <div class="adm-actions">
+        <button class="btn btn--dark btn--sm" type="button" data-add>+ Додати співробітника</button>
+        <button class="btn btn--accent" type="button" data-save>Зберегти зміни</button>
+      </div>
+    </div>
+    <p class="adm-msg" data-msg role="status" aria-live="polite"></p>
+    <ul class="adm-list" data-list></ul>
+  </section>
+</main>
+
+<template id="member-tpl">
+  <li class="adm-card">
+    <div class="adm-photo">
+      <img alt="" hidden>
+      <span class="adm-nophoto">Без фото</span>
+      <label class="btn btn--sm btn--dark adm-upload">Завантажити фото<input type="file" accept="image/jpeg,image/png,image/webp" hidden></label>
+      <button class="adm-link" type="button" data-del-photo hidden>Видалити фото</button>
+    </div>
+    <div class="adm-fields">
+      <div class="field"><label>Посада *</label><input name="role" maxlength="60" required></div>
+      <div class="field"><label>Ім’я та прізвище</label><input name="name" maxlength="80"></div>
+      <div class="field"><label>Телефон</label><input name="phone" type="tel" maxlength="30" placeholder="+380 …"></div>
+      <div class="field"><label>Email</label><input name="email" type="email" maxlength="120"></div>
+      <div class="field"><label>Telegram (username)</label><input name="telegram" maxlength="40" placeholder="без @"></div>
+      <div class="adm-row">
+        <button class="adm-link" type="button" data-up>↑ Вище</button>
+        <button class="adm-link" type="button" data-down>↓ Нижче</button>
+        <button class="adm-link adm-danger" type="button" data-remove>Видалити співробітника</button>
+      </div>
+    </div>
+  </li>
+</template>
+</body>
+</html>

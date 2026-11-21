@@ -3,12 +3,14 @@ import { readFileSync } from 'node:fs';
 
 const data = JSON.parse(readFileSync(new URL('../data/europe-map.json', import.meta.url), 'utf8'));
 
-const DEST = ['PL', 'DE', 'CZ', 'SK', 'HU', 'IT', 'LT', 'EE', 'DK', 'CH'];
+const DEST = ['PL', 'DE', 'CZ', 'SK', 'HU', 'RO', 'MD', 'BG', 'SI', 'IT', 'CH', 'FR', 'ES', 'PT', 'BE', 'NL', 'DK', 'LT', 'LV', 'EE', 'FI'];
 // Зміщення підписів відносно точки: [dx, dy, anchor]
 const LABEL = {
-  PL: [0, -16, 'middle'], DE: [-14, 5, 'end'], CZ: [-12, -10, 'end'], SK: [4, -14, 'middle'],
-  HU: [0, 26, 'middle'], IT: [14, 5, 'start'], CH: [0, 28, 'middle'], DK: [-14, 5, 'end'],
-  LT: [14, 5, 'start'], EE: [14, 5, 'start'],
+  PL: [0, -16, 'middle'], DE: [0, -16, 'middle'], CZ: [-12, -10, 'end'], SK: [4, -14, 'middle'],
+  HU: [14, 5, 'start'], RO: [14, 5, 'start'], MD: [14, 5, 'start'], BG: [0, 26, 'middle'],
+  SI: [0, 26, 'middle'], IT: [-14, 5, 'end'], CH: [0, 28, 'middle'], FR: [-14, 5, 'end'],
+  ES: [14, 5, 'start'], PT: [-8, 26, 'start'], BE: [-14, 5, 'end'], NL: [-14, 5, 'end'],
+  DK: [-14, 5, 'end'], LT: [14, 5, 'start'], LV: [14, 5, 'start'], EE: [14, 5, 'start'], FI: [14, 5, 'start'],
 };
 
 function curve([x1, y1], [x2, y2], bend = 0.2) {
@@ -33,12 +35,12 @@ export function renderMap(t) {
     .join('');
 
   const routes = DEST.map((iso, i) => {
-    const d = curve(hub, P[iso], iso === 'EE' || iso === 'LT' ? -0.18 : 0.2);
-    const dur = (5.5 + (i % 4) * 0.7).toFixed(1);
+    const d = curve(hub, P[iso], ['EE', 'LT', 'LV', 'FI'].includes(iso) ? -0.16 : ['MD', 'RO', 'BG'].includes(iso) ? 0.3 : 0.16);
+    const dur = (5 + (i % 5) * 0.8).toFixed(1);
     return `<g class="route" data-iso="${iso}">
       <path id="r-${iso}" class="route-line" d="${d}"/>
-      <circle class="route-pulse" r="3.2"><animateMotion dur="${dur}s" repeatCount="indefinite" begin="${(i * 0.45).toFixed(2)}s" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#r-${iso}"/></animateMotion></circle>
-      <circle class="route-pulse route-pulse--back" r="3.2"><animateMotion dur="${dur}s" repeatCount="indefinite" begin="${(i * 0.45 + 1.6).toFixed(2)}s" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#r-${iso}"/></animateMotion></circle>
+      <circle class="route-pulse" r="3.2"><animateMotion dur="${dur}s" repeatCount="indefinite" begin="${(i * 0.3).toFixed(2)}s" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#r-${iso}"/></animateMotion></circle>
+      <circle class="route-pulse route-pulse--back" r="3.2"><animateMotion dur="${dur}s" repeatCount="indefinite" begin="${(i * 0.3 + 1.6).toFixed(2)}s" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#r-${iso}"/></animateMotion></circle>
     </g>`;
   }).join('');
 
@@ -49,11 +51,11 @@ export function renderMap(t) {
   }).join('');
 
   const [hx, hy] = hub;
-  return `<svg class="map-svg" viewBox="300 40 640 500" role="img" aria-labelledby="map-title" preserveAspectRatio="xMidYMid meet">
+  return `<svg class="map-svg" viewBox="20 50 930 680" role="img" aria-labelledby="map-title" preserveAspectRatio="xMidYMid meet">
   <title id="map-title">${t.geography.mapLabel}</title>
   <defs>
-    <radialGradient id="map-fade" cx="58%" cy="52%" r="62%"><stop offset="60%" stop-color="#fff"/><stop offset="100%" stop-color="#000"/></radialGradient>
-    <mask id="map-mask"><rect x="300" y="40" width="640" height="500" fill="url(#map-fade)"/></mask>
+    <radialGradient id="map-fade" cx="55%" cy="50%" r="64%"><stop offset="60%" stop-color="#fff"/><stop offset="100%" stop-color="#000"/></radialGradient>
+    <mask id="map-mask"><rect x="20" y="50" width="930" height="680" fill="url(#map-fade)"/></mask>
   </defs>
   <g mask="url(#map-mask)">${countries}</g>
   <g class="routes">${routes}</g>

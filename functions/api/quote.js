@@ -11,6 +11,7 @@
  *   MAIL_FROM             — відправник, напр. "KIIKO <noreply@kiiko.com.ua>" (домен підтверджений у Resend)
  *   TELEGRAM_BOT_TOKEN    — токен бота (необов'язково)
  *   TELEGRAM_CHAT_ID      — chat id для заявок (необов'язково)
+ *   MAIL_TO (без RESEND_API_KEY) — заявки йдуть через FormSubmit.co (одноразова активація листом); FORMSUBMIT=off вимикає
  *   ALLOWED_ORIGINS       — дозволені Origin через кому (необов'язково; за замовчуванням — той самий хост)
  */
 
@@ -43,7 +44,7 @@ export function validate(body, now = Date.now()) {
   for (const k of ['from', 'to', 'cargo', 'name']) if (d[k].length < 2) fields[k] = 'Заповніть це поле';
   const w = Number(d.weight);
   if (!d.weight) fields.weight = 'Заповніть це поле';
-  else if (!Number.isFinite(w) || w < 0.1 || w > 20) fields.weight = 'Вкажіть вагу від 0,1 до 20 т';
+  else if (!Number.isFinite(w) || w < 0.1 || w > 24) fields.weight = 'Вкажіть вагу від 0,1 до 24 т';
   if (!/^\d{4}-\d{2}-\d{2}$/.test(d.date) || Number.isNaN(Date.parse(d.date))) fields.date = 'Вкажіть дату завантаження';
   else {
     // допускаємо різницю часових поясів: дата не раніше ніж «вчора» за UTC
@@ -91,6 +92,19 @@ async function sendEmail(env, msg, replyTo) {
     body: JSON.stringify({ from: env.MAIL_FROM, to, subject: msg.subject, html: msg.html, text: msg.text, ...(replyTo && { reply_to: replyTo }) }),
   });
   if (!r.ok) throw new Error(`resend ${r.status}: ${(await r.text()).slice(0, 300)}`);
+  return true;
+}
+
+// Резервний канал без API-ключів: FormSubmit (потребує одноразової активації через лист на MAIL_TO)
+async function sendFormSubmit(env, d, msg, origin) {
+  const to = env.MAIL_TO.split(',')[0].trim();
+  const r = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(to)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json', Origin: origin, Referer: origin + '/' },
+    body: JSON.stringify({ _subject: msg.subject, _template: 'table', _captcha: 'false', 'Звідки': d.from, 'Куди': d.to, 'Вантаж': d.cargo, 'Вага, т': d.weight, 'Дата завантаження': d.date, 'Ім’я': d.name, 'Компанія': d.company || '—', 'Телефон': d.phone, email: d.email || undefined, 'Додатково': d.message || '—' }),
+  });
+  const out = await r.json().catch(() => ({}));
+  if (!r.ok || !(out.success === true || out.success === 'true')) throw new Error(`formsubmit ${r.status}: ${String(out.message || '').slice(0, 200)}`);
   return true;
 }
 
@@ -144,7 +158,8 @@ export async function onRequestPost({ request, env }) {
 
     const hasEmail = Boolean(env.RESEND_API_KEY && env.MAIL_TO && env.MAIL_FROM);
     const hasTg = Boolean(env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID);
-    if (!hasEmail && !hasTg) {
+    const hasFormSubmit = !hasEmail && Boolean(env.MAIL_TO) && env.FORMSUBMIT !== 'off';
+    if (!hasEmail && !hasTg && !hasFormSubmit) {
       console.error('quote: no delivery channel configured');
       return json({ ok: false, error: 'Прийом заявок через сайт тимчасово не налаштовано. Будь ласка, зв’яжіться з нами телефоном або email' }, 503);
     }
@@ -154,6 +169,7 @@ export async function onRequestPost({ request, env }) {
     const jobs = [];
     if (hasEmail) jobs.push(sendEmail(env, msg, data.email || undefined));
     if (hasTg) jobs.push(sendTelegram(env, msg));
+    if (hasFormSubmit) jobs.push(sendFormSubmit(env, data, msg, new URL(request.url).origin));
     const results = await Promise.allSettled(jobs);
     const delivered = results.some((r) => r.status === 'fulfilled');
     results.filter((r) => r.status === 'rejected').forEach((r) => console.error('quote delivery failed:', r.reason?.message));

@@ -33,11 +33,25 @@ function truckDiagram(t) {
   <rect class="td-bumper" x="22" y="150" width="22" height="14" rx="2"/>
   ${[66, 168].map((x) => `<circle class="td-wheel" cx="${x}" cy="180" r="19"/><circle class="td-hub" cx="${x}" cy="180" r="6"/>`).join('')}
   ${[526, 568, 610].map((x) => `<circle class="td-wheel" cx="${x}" cy="180" r="19"/><circle class="td-hub" cx="${x}" cy="180" r="6"/>`).join('')}
-  <text class="td-load" x="430" y="108" text-anchor="middle">20 т</text>
+  <text class="td-load" x="430" y="108" text-anchor="middle">24 т</text>
   <g class="td-callout"><path d="M100 30V12h120"/><circle cx="100" cy="30" r="3"/><text x="226" y="16">EURO 6</text></g>
   <g class="td-callout"><path d="M600 38V12H470"/><circle cx="600" cy="38" r="3"/><text x="464" y="16" text-anchor="end">Тент</text></g>
   <g class="td-callout"><path d="M300 199v22h-40"/><circle cx="300" cy="199" r="3"/><text x="254" y="225" text-anchor="end">FTL</text></g>
 </svg>`;
+}
+
+
+/* ---------- Команда ---------- */
+const initials = (name = '') => name.trim().split(/\s+/).slice(0, 2).map((w) => w[0] || '').join('').toUpperCase();
+export function teamCard(m, t) {
+  const photo = m.photo
+    ? `<img src="${esc(m.photo)}" alt="${esc(m.name || m.role)}" width="600" height="600" loading="lazy" decoding="async">`
+    : `<span class="team-ph" aria-hidden="true">${m.name ? esc(initials(m.name)) : icon('user')}</span>`;
+  const links = [];
+  if (m.phone) links.push(`<a href="${telHref(m.phone)}">${icon('phone')}<span>${esc(m.phone)}</span></a>`);
+  if (m.email) links.push(`<a href="mailto:${esc(m.email)}">${icon('mail')}<span>${esc(m.email)}</span></a>`);
+  if (m.telegram) links.push(`<a href="https://t.me/${esc(String(m.telegram).replace(/^@/, ''))}" target="_blank" rel="noopener">${icon('chat')}<span>Telegram</span></a>`);
+  return `<li class="team-card reveal"><div class="team-photo">${photo}</div><div class="team-body"><p class="team-role">${esc(m.role)}</p><h3 class="team-name">${m.name ? esc(m.name) : '<span class="muted">—</span>'}</h3>${links.length ? `<div class="team-links">${links.join('')}</div>` : ''}</div></li>`;
 }
 
 /* ---------- Schema.org ---------- */
@@ -50,6 +64,7 @@ function schema(cfg, t) {
     name: cfg.company.brand,
     legalName: cfg.company.legalName,
     url,
+    logo: cfg.siteUrl + '/assets/img/logo-dark.svg',
     description: t.meta.description,
     areaServed: ['UA', ...DESTINATIONS].map((code) => ({ '@type': 'Country', name: code })),
     knowsAbout: ['Міжнародні вантажні перевезення', 'FTL', 'Тентовані перевезення', 'TIR', 'CMR'],
@@ -129,7 +144,7 @@ function header(t, home = '') {
   const links = t.nav.map(([id, label]) => `<li><a href="${home}#${id}" data-nav="${id}">${label}</a></li>`).join('');
   return `<header class="site-header" data-header>
   <div class="container header-inner">
-    <a class="wordmark" href="${home || '#top'}" aria-label="KIIKO — на головну"><span>KIIKO</span></a>
+    <a class="logo" href="${home || '#top'}" aria-label="KIIKO — на головну"><picture><source media="(max-width: 520px)" srcset="/assets/img/logo-mark-white.svg"><img src="/assets/img/logo-white.svg" alt="KIIKO — Professional Transportation Company" width="138" height="44"></picture></a>
     <nav class="main-nav" id="main-nav" aria-label="Основна навігація" data-nav-panel>
       <ul>${links}</ul>
       <a class="btn btn--accent btn--sm nav-cta" href="${home}#quote">${t.navCta}</a>
@@ -166,7 +181,7 @@ function footer(cfg, t, home = '') {
   return `<footer class="site-footer">
   <div class="container footer-grid">
     <div class="footer-brand">
-      <a class="wordmark wordmark--light" href="${home || '#top'}"><span>KIIKO</span></a>
+      <a class="logo logo--footer" href="${home || '#top'}" aria-label="KIIKO — на головну"><img src="/assets/img/logo-white.svg" alt="KIIKO — Professional Transportation Company" width="201" height="64" loading="lazy"></a>
       <p>${t.footer.tagline}<br><span class="muted">${esc(cfg.company.legalName)}</span></p>
     </div>
     <nav aria-label="${t.footer.nav}">
@@ -222,7 +237,7 @@ export function indexPage(cfg, t) {
       <a class="btn btn--accent btn--lg" href="#quote">${h.primary}${icon('arrow')}</a>
       <a class="btn btn--ghost btn--lg" href="#about">${h.secondary}</a>
     </div>
-    <p class="hero-route" aria-hidden="true"><span>UA</span>${icon('swap')}<span>${DESTINATIONS.join(' · ')}</span></p>
+    <p class="hero-route" aria-hidden="true"><span>UA</span>${icon('swap')}<span>EU · ${DESTINATIONS.length} ${t.hero.routeLabel}</span></p>
   </div>
   <div class="hero-facts">
     <ul class="container facts">
@@ -331,6 +346,20 @@ export function indexPage(cfg, t) {
   </div>
 </section>
 
+<!-- 7b. TEAM -->
+<section class="section team" id="team" aria-labelledby="team-title">
+  <div class="container">
+    <div class="section-head section-head--row reveal">
+      <div><p class="eyebrow">${t.team.eyebrow}</p>
+      <h2 id="team-title" class="h2">${t.team.title}</h2></div>
+      <p class="section-text">${t.team.text}</p>
+    </div>
+    <ul class="team-grid" data-team data-photo-soon="${esc(t.team.photoSoon)}">
+      ${t.team.defaults.map((m) => teamCard(m, t)).join('')}
+    </ul>
+  </div>
+</section>
+
 <!-- 8. QUOTE FORM -->
 <section class="section quote" id="quote" aria-labelledby="quote-title">
   <div class="container quote-grid">
@@ -355,7 +384,7 @@ export function indexPage(cfg, t) {
       <fieldset class="form-group form-group--3">
         <legend class="visually-hidden">Вантаж</legend>
         <div class="field field--wide"><label for="f-cargo">${f.cargo[0]} <span class="req" aria-hidden="true">*</span></label><input id="f-cargo" name="cargo" type="text" placeholder="${f.cargo[1]}" required maxlength="160" aria-describedby="f-cargo-err">${err('f-cargo')}</div>
-        <div class="field"><label for="f-weight">${f.weight[0]} <span class="req" aria-hidden="true">*</span></label><input id="f-weight" name="weight" type="number" inputmode="decimal" min="0.1" max="20" step="0.1" placeholder="${f.weight[1]}" required aria-describedby="f-weight-err">${err('f-weight')}</div>
+        <div class="field"><label for="f-weight">${f.weight[0]} <span class="req" aria-hidden="true">*</span></label><input id="f-weight" name="weight" type="number" inputmode="decimal" min="0.1" max="24" step="0.1" placeholder="${f.weight[1]}" required aria-describedby="f-weight-err">${err('f-weight')}</div>
         <div class="field"><label for="f-date">${f.date[0]} <span class="req" aria-hidden="true">*</span></label><input id="f-date" name="date" type="date" required aria-describedby="f-date-err">${err('f-date')}</div>
       </fieldset>
       <fieldset class="form-group">
@@ -444,7 +473,7 @@ export function privacyPage(cfg, t) {
     <h2>3. Мета обробки</h2>
     <p>Дані використовуються виключно для того, щоб опрацювати вашу заявку, зв’язатися з вами, розрахувати вартість перевезення та, за вашим бажанням, укласти договір. Ми не використовуємо їх для розсилок без окремої згоди і не продаємо третім особам.</p>
     <h2>4. Передача даних</h2>
-    <p>Для доставки заявки та захисту сайту ми користуємося послугами технічних партнерів: Cloudflare (хостинг і перевірка Cloudflare Turnstile) та сервісу доставки електронної пошти або месенджера, через який заявка надходить нам. Ці сервіси обробляють дані лише в обсязі, потрібному для виконання своїх функцій.</p>
+    <p>Для доставки заявки та захисту сайту ми користуємося послугами технічних партнерів: Cloudflare (хостинг, зберігання даних сайту та перевірка Cloudflare Turnstile) та сервісу доставки електронної пошти (FormSubmit або Resend) чи месенджера, через який заявка надходить нам. Ці сервіси обробляють дані лише в обсязі, потрібному для виконання своїх функцій.</p>
     <h2>5. Строк зберігання</h2>
     <p>Ми зберігаємо дані заявки стільки, скільки це потрібно для її опрацювання та подальшої співпраці, а також протягом строків, визначених законодавством для облікових документів.</p>
     <h2>6. Ваші права</h2>

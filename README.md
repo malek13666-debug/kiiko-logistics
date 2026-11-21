@@ -75,3 +75,15 @@ Cloudflare → проєкт → **Settings → Variables and Secrets** (тип *
 - Шрифт IBM Plex — SIL Open Font License 1.1 (`src/assets/fonts/OFL-LICENSE.txt`).
 - Межі країн на карті — World Borders Dataset, thematicmapping.org, CC BY-SA 3.0 (через github.com/leakyMirror/map-of-europe).
 - Ілюстративні фото — Unsplash License (автори вказані у футері сайту). Їх слід замінити на фото власного автопарку.
+
+## Адмінка «Команда» (/admin/)
+
+Адреса: `https://kiiko-logistics.pages.dev/admin/`. Там можна додавати й видаляти співробітників, міняти порядок, вносити ім’я, посаду, телефон, email, Telegram і завантажувати фото (стискається в браузері до 900×1125).
+
+- Дані та фото зберігаються в Cloudflare KV (`TEAM_KV`, прив’язка у `wrangler.toml`).
+- Пароль — секрет `ADMIN_PASSWORD` у Cloudflare → kiiko-logistics → Settings → Variables and Secrets (тип *Secret*). Після зміни пароля потрібен новий деплой (Deployments → Retry або будь-який push).
+- Зміни з’являються на сайті одразу (кеш до 1 хвилини), без перезбирання.
+
+## Заявки на пошту без API-ключів
+
+`MAIL_TO` задано у `wrangler.toml`. Поки не підключено Resend, заявки йдуть через FormSubmit.co: **перша заявка** надішле на `MAIL_TO` лист «Activate Form» — натисніть у ньому кнопку активації, і всі наступні заявки приходитимуть на пошту. Щоб перейти на Resend, додайте `RESEND_API_KEY` і `MAIL_FROM`.

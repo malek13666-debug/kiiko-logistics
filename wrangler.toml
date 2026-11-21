@@ -1,4 +1,13 @@
-# Конфігурація для Cloudflare Pages (використовується wrangler під час локальної розробки / прямого деплою).
+# Конфігурація Cloudflare Pages. Цей файл — джерело правди для змінних і прив'язок
+# (секрети ADMIN_PASSWORD, RESEND_API_KEY тощо задаються окремо в Dashboard → Settings → Variables and Secrets).
 name = "kiiko-logistics"
 compatibility_date = "2026-11-01"
 pages_build_output_dir = "./dist"
+
+[vars]
+MAIL_TO = "1917090@gmail.com"
+
+# Сховище для блоку «Команда» (дані та фото з адмінки /admin/)
+[[kv_namespaces]]
+binding = "TEAM_KV"
+id = "12ba85f405ae48349198da53ed33fd27"

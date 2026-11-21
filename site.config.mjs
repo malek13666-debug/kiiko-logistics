@@ -22,7 +22,7 @@ export default {
   contacts: {
     phone: '',          // наприклад '+380 67 000 00 00'
     phone2: '',         // додатковий номер (необов'язково)
-    email: '',          // наприклад 'info@kiiko.com.ua'
+    email: '1917090@gmail.com',
     address: '',        // наприклад 'м. Луцьк, вул. …' (необов'язково)
     workingHours: '',   // наприклад 'Пн–Пт 08:00–19:00'
     messengers: {

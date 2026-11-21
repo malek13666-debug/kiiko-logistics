@@ -11,7 +11,7 @@ const mailEnv = { RESEND_API_KEY: 'test', MAIL_TO: 'a@b.ua', MAIL_FROM: 'KIIKO <
 
 test('validate: коректні дані', () => { assert.deepEqual(validate(good).fields, {}); });
 test('validate: помилки полів', () => {
-  const { fields } = validate({ ...good, weight: '25', phone: 'abc', email: 'x@', date: '2020-01-01', consent: false, cargo: '' });
+  const { fields } = validate({ ...good, weight: '25.5', phone: 'abc', email: 'x@', date: '2020-01-01', consent: false, cargo: '' });
   assert.ok(fields.weight && fields.phone && fields.email && fields.date && fields.consent && fields.cargo);
 });
 test('422 при невалідних даних', async () => {

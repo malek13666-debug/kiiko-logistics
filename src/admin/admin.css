@@ -1,0 +1,33 @@
+.admin { background: var(--paper); min-height: 100vh; }
+.adm-top { background: var(--ink); color: #fff; }
+.adm-top-in { display: flex; align-items: center; gap: 16px; height: 68px; }
+.adm-top .logo img { height: 40px; }
+.adm-badge { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.adm-top [data-logout] { margin-left: auto; }
+.adm-main { padding-block: 48px 96px; }
+.adm-login { max-width: 420px; }
+.adm-login .h2, .adm-head .h2 { font-size: 2.4rem; margin-bottom: 10px; }
+.adm-login form { margin-top: 24px; }
+.adm-msg { min-height: 1.5em; margin: 14px 0; font-weight: 500; }
+.adm-msg.is-error { color: var(--danger); }
+.adm-msg.is-ok { color: var(--ok); }
+.adm-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px; }
+.adm-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.adm-list { display: grid; gap: 16px; margin-top: 12px; }
+.adm-card { display: grid; grid-template-columns: 200px 1fr; gap: 24px; padding: 20px; background: #fff; border-radius: var(--radius); border-left: 3px solid var(--accent); }
+.adm-photo { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.adm-photo img, .adm-nophoto { width: 200px; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); background: var(--paper-2); }
+.adm-nophoto { display: grid; place-items: center; color: var(--muted); font-size: .9rem; }
+.adm-upload { cursor: pointer; }
+.adm-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; align-content: start; }
+.adm-fields .field { margin-bottom: 14px; }
+.adm-row { grid-column: 1 / -1; display: flex; gap: 18px; flex-wrap: wrap; }
+.adm-link { background: none; border: 0; padding: 4px 0; color: var(--steel); font-weight: 500; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.adm-danger { color: var(--danger); margin-left: auto; }
+.adm-card.is-busy { opacity: .6; pointer-events: none; }
+code { font-family: var(--font-mono); font-size: .9em; background: var(--paper-2); padding: 1px 5px; border-radius: 3px; }
+@media (max-width: 720px) {
+  .adm-card { grid-template-columns: 1fr; }
+  .adm-fields { grid-template-columns: 1fr; }
+  .adm-photo img, .adm-nophoto { width: 160px; }
+}

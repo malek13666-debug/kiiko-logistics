@@ -25,10 +25,15 @@ cpSync(join(root, 'src/assets'), join(dist, 'assets'), { recursive: true });
 cpSync(join(root, 'public'), dist, { recursive: true });
 for (const f of ['favicon.svg']) cpSync(join(root, 'src/assets', f), join(dist, f));
 
+// Адмінка (статичні файли; доступ захищено паролем на рівні API)
+cpSync(join(root, 'src/admin'), join(dist, 'admin'), { recursive: true });
+
 // 2. Хеш для скидання кешу CSS/JS
 const hash = createHash('sha1')
   .update(readFileSync(join(root, 'src/assets/css/main.css')))
   .update(readFileSync(join(root, 'src/assets/js/main.js')))
+  .update(readFileSync(join(root, 'src/admin/admin.js')))
+  .update(readFileSync(join(root, 'src/admin/admin.css')))
   .digest('hex').slice(0, 10);
 
 const write = (rel, html) => {
@@ -53,6 +58,8 @@ for (const locale of cfg.locales) {
   }
 }
 
+{ const f = join(dist, 'admin/index.html'); writeFileSync(f, readFileSync(f, 'utf8').replaceAll('__BUILD__', hash)); }
+
 // 4. sitemap.xml та robots.txt
 const today = new Date().toISOString().slice(0, 10);
 writeFileSync(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
@@ -63,6 +70,7 @@ ${urls.map((u) => `  <url><loc>${u.loc}</loc><lastmod>${today}</lastmod><priorit
 writeFileSync(join(dist, 'robots.txt'), `User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /admin/
 
 Sitemap: ${cfg.siteUrl}/sitemap.xml
 `);

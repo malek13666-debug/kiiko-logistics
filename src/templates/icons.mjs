@@ -10,6 +10,7 @@ export const icons = {
   mail: (c) => wrap('<rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3.5 6 8.5 7 8.5-7"/>', c),
   pin: (c) => wrap('<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>', c),
   clock: (c) => wrap('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', c),
+  user: (c) => wrap('<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c.8-4 3.8-6 7.5-6s6.7 2 7.5 6"/>', c),
   chat: (c) => wrap('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9.5h8M8 12.5h5"/>', c),
   menu: (c) => wrap('<path d="M4 7h16M4 12h16M4 17h10"/>', c),
   close: (c) => wrap('<path d="M6 6l12 12M18 6 6 18"/>', c),

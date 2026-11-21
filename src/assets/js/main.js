@@ -31,7 +31,7 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && document.body.classList.contains('menu-open')) { setMenu(false); toggle.focus(); }
     });
-    window.matchMedia('(min-width: 961px)').addEventListener('change', function (m) { if (m.matches) setMenu(false); });
+    window.matchMedia('(min-width: 1121px)').addEventListener('change', function (m) { if (m.matches) setMenu(false); });
   }
 
   /* ---------- Поява секцій ---------- */
@@ -108,6 +108,35 @@
   /* ---------- Рік у футері ---------- */
   document.querySelectorAll('[data-year]').forEach(function (el) { el.textContent = new Date().getFullYear(); });
 
+  /* ---------- Команда: дані з адмінки (/api/team) ---------- */
+  var teamEl = document.querySelector('[data-team]');
+  if (teamEl && window.fetch) {
+    var E = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+    var I = {
+      phone: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 4h3.5l1.7 4.3-2.2 1.4a11 11 0 0 0 6.3 6.3l1.4-2.2L20 15.5V19a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1Z"/></svg>',
+      mail: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3.5 6 8.5 7 8.5-7"/></svg>',
+      chat: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9.5h8M8 12.5h5"/></svg>',
+      user: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c.8-4 3.8-6 7.5-6s6.7 2 7.5 6"/></svg>',
+    };
+    var ini = function (n) { return n.trim().split(/\s+/).slice(0, 2).map(function (w) { return w[0] || ''; }).join('').toUpperCase(); };
+    fetch('/api/team', { headers: { Accept: 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !Array.isArray(d.members) || !d.members.length) return;
+        teamEl.innerHTML = d.members.map(function (m) {
+          var photo = m.photo
+            ? '<img src="' + E(m.photo) + '" alt="' + E(m.name || m.role) + '" width="600" height="750" loading="lazy" decoding="async">'
+            : '<span class="team-ph" aria-hidden="true">' + (m.name ? E(ini(m.name)) : I.user) + '</span>';
+          var links = [];
+          if (m.phone) links.push('<a href="tel:' + E(m.phone.replace(/[^\d+]/g, '')) + '">' + I.phone + '<span>' + E(m.phone) + '</span></a>');
+          if (m.email) links.push('<a href="mailto:' + E(m.email) + '">' + I.mail + '<span>' + E(m.email) + '</span></a>');
+          if (m.telegram) links.push('<a href="https://t.me/' + E(m.telegram.replace(/^@/, '')) + '" target="_blank" rel="noopener">' + I.chat + '<span>Telegram</span></a>');
+          return '<li class="team-card is-in"><div class="team-photo">' + photo + '</div><div class="team-body"><p class="team-role">' + E(m.role) + '</p><h3 class="team-name">' + (m.name ? E(m.name) : '<span class="muted">—</span>') + '</h3>' + (links.length ? '<div class="team-links">' + links.join('') + '</div>' : '') + '</div></li>';
+        }).join('');
+      })
+      .catch(function () { /* залишаємо статичні картки */ });
+  }
+
   /* ---------- Форма заявки ---------- */
   var form = document.querySelector('[data-quote-form]');
   if (!form) return;
@@ -153,7 +182,7 @@
     weight: function (v) {
       if (!v.trim()) return M.msgRequired;
       var n = parseFloat(v.replace(',', '.'));
-      return (n >= 0.1 && n <= 20) || M.msgWeight;
+      return (n >= 0.1 && n <= 24) || M.msgWeight;
     },
     date: function (v) { if (!v) return M.msgRequired; return v >= todayStr || M.msgDate; },
     name: function (v) { return v.trim().length >= 2 || M.msgRequired; },

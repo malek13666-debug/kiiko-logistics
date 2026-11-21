@@ -109,7 +109,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .wordmark span { position: relative; padding-left: 18px; }
 .wordmark span::before { content: ''; position: absolute; left: 0; top: 50%; width: 7px; height: 22px; transform: translateY(-50%) skewX(-14deg); background: var(--accent); }
 .main-nav { margin-left: auto; }
-.main-nav ul { display: flex; gap: clamp(14px, 1.8vw, 28px); }
+.main-nav ul { display: flex; gap: clamp(12px, 1.5vw, 24px); }
 .main-nav a { position: relative; font-size: .9375rem; font-weight: 500; text-decoration: none; color: rgba(255, 255, 255, .82); padding-block: 8px; transition: color .2s; }
 .main-nav a::after { content: ''; position: absolute; left: 0; right: 100%; bottom: 0; height: 1px; background: var(--accent); transition: right .3s var(--ease); }
 .main-nav a:hover, .main-nav a.is-active { color: var(--white); }
@@ -120,10 +120,10 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .menu-open .menu-toggle .i-open { display: none; }
 .menu-open .menu-toggle .i-close { display: block; }
 
-@media (max-width: 1080px) {
+@media (max-width: 1320px) {
   .header-cta { display: none; }
 }
-@media (max-width: 960px) {
+@media (max-width: 1120px) {
   .menu-toggle { display: inline-flex; }
   .main-nav { position: fixed; inset: var(--header-h) 0 0; margin: 0; padding: 28px var(--gutter) calc(28px + env(safe-area-inset-bottom)); background: var(--ink); display: flex; flex-direction: column; gap: 28px; overflow-y: auto; visibility: hidden; opacity: 0; transform: translateY(-8px); transition: opacity .25s var(--ease), transform .25s var(--ease), visibility 0s .25s; }
   .menu-open .main-nav { visibility: visible; opacity: 1; transform: none; transition-delay: 0s; }
@@ -462,3 +462,33 @@ button, input, textarea, select { font: inherit; color: inherit; }
   .site-header, .mobile-cta, .hero-media, .quote-form, .menu-toggle { display: none !important; }
   .hero, .section--dark { background: #fff; color: #000; }
 }
+
+/* ---------- Логотип ---------- */
+.logo { display: inline-flex; align-items: center; flex: none; }
+.logo img { height: 44px; width: auto; }
+.logo--footer img { height: 64px; }
+@media (max-width: 520px) { .site-header .logo img { height: 38px; } }
+
+/* ---------- Заголовок секції в рядок ---------- */
+.section-head--row { max-width: none; display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px clamp(32px, 6vw, 96px); align-items: end; }
+.section-head--row .h2 { margin-bottom: 0; }
+.section-head--row .section-text { margin: 0; }
+@media (max-width: 860px) { .section-head--row { grid-template-columns: 1fr; } }
+
+/* ---------- Команда ---------- */
+.team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(16px, 2vw, 28px); }
+.team-card { display: flex; flex-direction: column; background: var(--paper); border-radius: var(--radius); overflow: hidden; }
+.team-photo { position: relative; aspect-ratio: 4 / 5; background: linear-gradient(160deg, var(--paper-2), #d9d7d0); overflow: hidden; }
+.team-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
+.team-card:hover .team-photo img { transform: scale(1.03); }
+.team-ph { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-head); font-weight: 700; font-size: 3.2rem; color: var(--steel-2); letter-spacing: .04em; }
+.team-ph .icon { width: 64px; height: 64px; stroke-width: 1; }
+.team-body { padding: 20px 22px 24px; border-top: 3px solid var(--accent); flex: 1; }
+.team-role { margin: 0 0 6px; font-family: var(--font-mono); font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--steel); }
+.team-name { font-family: var(--font-head); font-size: 1.45rem; line-height: 1.15; margin-bottom: 14px; }
+.team-links { display: grid; gap: 8px; }
+.team-links a { display: inline-flex; align-items: center; gap: 10px; font-size: .92rem; font-weight: 500; text-decoration: none; word-break: break-all; }
+.team-links a:hover span { text-decoration: underline; }
+.team-links .icon { width: 18px; height: 18px; flex: none; color: var(--steel); }
+@media (max-width: 1000px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 420px) { .team-grid { grid-template-columns: 1fr 1fr; gap: 12px; } .team-body { padding: 14px 14px 18px; } .team-name { font-size: 1.15rem; } .team-links a span { font-size: .8rem; } }

@@ -14,7 +14,23 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
 const port = Number(process.argv[2] || 8788);
-const fn = await import(join(root, 'functions/api/quote.js'));
+const load = (f) => import(join(root, 'functions', f));
+const routes = [
+  [/^\/api\/quote$/, await load('api/quote.js')],
+  [/^\/api\/team$/, await load('api/team.js')],
+  [/^\/api\/team\/photo\/([^/]+)$/, await load('api/team/photo/[id].js')],
+  [/^\/api\/admin\/login$/, await load('api/admin/login.js')],
+  [/^\/api\/admin\/team$/, await load('api/admin/team.js')],
+  [/^\/api\/admin\/photo\/([^/]+)$/, await load('api/admin/photo/[id].js')],
+];
+// Проста імітація Cloudflare KV у пам'яті
+const mem = new Map();
+const memKV = {
+  async get(k, type) { const v = mem.get(k); if (!v) return null; return type === 'json' ? JSON.parse(new TextDecoder().decode(v.value)) : type === 'arrayBuffer' ? v.value : new TextDecoder().decode(v.value); },
+  async getWithMetadata(k) { const v = mem.get(k); return v ? { value: v.value, metadata: v.metadata } : { value: null, metadata: null }; },
+  async put(k, value, o = {}) { mem.set(k, { value: typeof value === 'string' ? new TextEncoder().encode(value).buffer : value, metadata: o.metadata || null }); },
+  async delete(k) { mem.delete(k); },
+};
 
 const env = {};
 const varsFile = join(root, '.dev.vars');
@@ -29,12 +45,17 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 
 
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
-  if (url.pathname === '/api/quote') {
+  const route = routes.find(([re]) => re.test(url.pathname));
+  if (route) {
+    const [re, fn] = route;
+    const m = url.pathname.match(re);
     const chunks = [];
     for await (const c of req) chunks.push(c);
     const request = new Request(url, { method: req.method, headers: req.headers, body: ['GET', 'HEAD'].includes(req.method) ? undefined : Buffer.concat(chunks) });
-    const handler = req.method === 'POST' ? fn.onRequestPost : fn.onRequest;
-    const r = await handler({ request, env });
+    const name = 'onRequest' + req.method[0] + req.method.slice(1).toLowerCase();
+    const handler = fn[name] || fn.onRequest;
+    if (!handler) { res.writeHead(405); res.end(); return; }
+    const r = await handler({ request, env: { TEAM_KV: memKV, ...env }, params: { id: m[1] } });
     res.writeHead(r.status, Object.fromEntries(r.headers));
     res.end(Buffer.from(await r.arrayBuffer()));
     return;
