@@ -137,6 +137,39 @@
       .catch(function () { /* залишаємо статичні картки */ });
   }
 
+  /* ---------- Відгуки: дані з адмінки (/api/reviews) + «Показати ще» ---------- */
+  var revEl = document.querySelector('[data-reviews]');
+  var moreBtn = document.querySelector('[data-reviews-more]');
+  var LIMIT = 6;
+  function collapseReviews() {
+    if (!revEl || !moreBtn) return;
+    var cards = revEl.querySelectorAll('.review-card');
+    cards.forEach(function (c, i) { c.hidden = i >= LIMIT; });
+    moreBtn.hidden = cards.length <= LIMIT;
+  }
+  if (moreBtn) moreBtn.addEventListener('click', function () {
+    revEl.querySelectorAll('.review-card[hidden]').forEach(function (c) { c.hidden = false; });
+    moreBtn.hidden = true;
+  });
+  collapseReviews();
+  if (revEl && window.fetch) {
+    var esc2 = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+    fetch('/api/reviews', { headers: { Accept: 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !Array.isArray(d.reviews) || !d.reviews.length) return;
+        var src = revEl.dataset.source, href = revEl.dataset.href;
+        revEl.innerHTML = d.reviews.map(function (r) {
+          var date = r.date ? r.date.split('-').reverse().join('.') : '';
+          return '<li class="review-card"><blockquote><p>' + esc2(r.text) + '</p></blockquote><footer><p class="review-author">' + esc2(r.author) + (r.city ? '<span>' + esc2(r.city) + '</span>' : '') + '</p><p class="review-meta">' +
+            (r.countries ? '<span class="review-route">' + esc2(r.countries) + '</span>' : '') + (r.route ? '<span>' + esc2(r.route) + '</span>' : '') + (date ? '<time datetime="' + esc2(r.date) + '">' + date + '</time>' : '') + '</p>' +
+            (href ? '<a class="review-src" href="' + esc2(href) + '" target="_blank" rel="noopener">' + esc2(src) + '</a>' : '<span class="review-src">' + esc2(src) + '</span>') + '</footer></li>';
+        }).join('');
+        collapseReviews();
+      })
+      .catch(function () {});
+  }
+
   /* ---------- Форма заявки ---------- */
   var form = document.querySelector('[data-quote-form]');
   if (!form) return;

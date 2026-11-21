@@ -43,6 +43,19 @@
     </div>
     <p class="adm-msg" data-msg role="status" aria-live="polite"></p>
     <ul class="adm-list" data-list></ul>
+
+    <div class="adm-head adm-head--sep">
+      <div>
+        <h2 class="h2">Відгуки</h2>
+        <p class="muted">Відгуки клієнтів на сайті. Додавайте лише справжні — наприклад, скопійовані з Lardi-Trans. Дата у форматі РРРР-ММ-ДД.</p>
+      </div>
+      <div class="adm-actions">
+        <button class="btn btn--dark btn--sm" type="button" data-rev-add>+ Додати відгук</button>
+        <button class="btn btn--accent" type="button" data-rev-save>Зберегти відгуки</button>
+      </div>
+    </div>
+    <p class="adm-msg" data-rev-msg role="status" aria-live="polite"></p>
+    <ul class="adm-list" data-rev-list></ul>
   </section>
 </main>
 
@@ -64,6 +77,23 @@
         <button class="adm-link" type="button" data-up>↑ Вище</button>
         <button class="adm-link" type="button" data-down>↓ Нижче</button>
         <button class="adm-link adm-danger" type="button" data-remove>Видалити співробітника</button>
+      </div>
+    </div>
+  </li>
+</template>
+<template id="review-tpl">
+  <li class="adm-card adm-card--rev">
+    <div class="adm-fields">
+      <div class="field"><label>Компанія / автор *</label><input name="author" maxlength="100"></div>
+      <div class="field"><label>Місто</label><input name="city" maxlength="60"></div>
+      <div class="field"><label>Маршрут</label><input name="route" maxlength="80" placeholder="Гамбург — Харків"></div>
+      <div class="field"><label>Країни</label><input name="countries" maxlength="20" placeholder="DE → UA"></div>
+      <div class="field"><label>Дата</label><input name="date" type="date"></div>
+      <div class="field adm-wide"><label>Текст відгуку *</label><textarea name="text" rows="3" maxlength="1500"></textarea></div>
+      <div class="adm-row">
+        <button class="adm-link" type="button" data-up>↑ Вище</button>
+        <button class="adm-link" type="button" data-down>↓ Нижче</button>
+        <button class="adm-link adm-danger" type="button" data-remove>Видалити відгук</button>
       </div>
     </div>
   </li>

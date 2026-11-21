@@ -22,3 +22,10 @@ test('requireAdmin: пароль', async () => {
   assert.equal((await requireAdmin(req(''), { TEAM_KV: kv, ADMIN_PASSWORD: 'secret' })).status, 401);
   assert.equal(await requireAdmin(req('secret'), { TEAM_KV: kv, ADMIN_PASSWORD: 'secret' }), null);
 });
+
+import { sanitizeReviews, DEFAULT_REVIEWS } from '../lib/reviews.js';
+test('відгуки: стартовий набір валідний, перевірка полів', () => {
+  assert.equal(sanitizeReviews(DEFAULT_REVIEWS).length, DEFAULT_REVIEWS.length);
+  assert.throws(() => sanitizeReviews([{ id: 'a', author: '', text: 'x' }]));
+  assert.throws(() => sanitizeReviews([{ id: 'a', author: 'A', text: 'x', date: '19.11.2026' }]));
+});

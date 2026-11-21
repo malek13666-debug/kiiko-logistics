@@ -19,6 +19,8 @@ const routes = [
   [/^\/api\/quote$/, await load('api/quote.js')],
   [/^\/api\/team$/, await load('api/team.js')],
   [/^\/api\/team\/photo\/([^/]+)$/, await load('api/team/photo/[id].js')],
+  [/^\/api\/reviews$/, await load('api/reviews.js')],
+  [/^\/api\/admin\/reviews$/, await load('api/admin/reviews.js')],
   [/^\/api\/admin\/login$/, await load('api/admin/login.js')],
   [/^\/api\/admin\/team$/, await load('api/admin/team.js')],
   [/^\/api\/admin\/photo\/([^/]+)$/, await load('api/admin/photo/[id].js')],

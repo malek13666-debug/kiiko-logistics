@@ -15,6 +15,7 @@ export default {
   company: {
     brand: 'KIIKO',
     legalName: 'ФОП «Кійко»',
+    registryName: 'ФОП Кійко А.О.',
     foundingNote: 'понад 20 років на ринку міжнародних перевезень',
   },
 
@@ -33,8 +34,10 @@ export default {
   },
 
   /** Профіль компанії на Lardi-Trans (повне посилання). Поки порожній — кнопка не показується. */
-  lardiTransUrl: '',
-  reviewsCount: '220+',
+  lardiTransUrl: 'https://lardi-trans.com/log/u/kiiko/',
+  /** Показники з профілю Lardi-Trans (оновлюйте вручну). */
+  lardi: { positive: 219, negative: 0, claims: 0, since: 2012, asOf: '21.11.2026' },
+  reviewsCount: '200+',
 
   /** Публічний Site Key Cloudflare Turnstile. Секретний ключ — лише в env TURNSTILE_SECRET_KEY. */
   turnstileSiteKey: '',

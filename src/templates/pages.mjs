@@ -1,5 +1,6 @@
 import { icon } from './icons.mjs';
 import { renderMap, DESTINATIONS } from './map.mjs';
+import { DEFAULT_REVIEWS } from '../../lib/reviews.js';
 
 export const esc = (s = '') =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -40,6 +41,14 @@ function truckDiagram(t) {
 </svg>`;
 }
 
+
+
+/* ---------- Відгуки ---------- */
+const fmtDate = (d) => (d ? d.split('-').reverse().join('.') : '');
+export function reviewCard(r, t, cfg) {
+  const href = cfg.lardiTransUrl ? cfg.lardiTransUrl + 'responses/?scopeType=POSITIVE' : '';
+  return `<li class="review-card"><blockquote><p>${esc(r.text)}</p></blockquote><footer><p class="review-author">${esc(r.author)}${r.city ? `<span>${esc(r.city)}</span>` : ''}</p><p class="review-meta">${r.countries ? `<span class="review-route">${esc(r.countries)}</span>` : ''}${r.route ? `<span>${esc(r.route)}</span>` : ''}${r.date ? `<time datetime="${esc(r.date)}">${fmtDate(r.date)}</time>` : ''}</p>${href ? `<a class="review-src" href="${esc(href)}" target="_blank" rel="noopener">${t.reputation.source}</a>` : `<span class="review-src">${t.reputation.source}</span>`}</footer></li>`;
+}
 
 /* ---------- Команда ---------- */
 const initials = (name = '') => name.trim().split(/\s+/).slice(0, 2).map((w) => w[0] || '').join('').toUpperCase();
@@ -319,17 +328,28 @@ export function indexPage(cfg, t) {
 
 <!-- 6. REPUTATION -->
 <section class="section reputation" id="reputation" aria-labelledby="rep-title">
-  <div class="container rep-grid">
-    <div class="rep-count reveal" aria-hidden="true">
-      <span class="rep-num">${esc(cfg.reviewsCount)}</span>
+  <div class="container">
+    <div class="rep-grid">
+      <div class="rep-count reveal">
+        <span class="rep-num" aria-hidden="true">${cfg.lardi.positive}</span>
+        <dl class="rep-stats">
+          <div><dt>${t.reputation.stats[0]}</dt><dd>${cfg.lardi.positive}</dd></div>
+          <div><dt>${t.reputation.stats[1]}</dt><dd>${cfg.lardi.negative}</dd></div>
+          <div><dt>${t.reputation.stats[2]}</dt><dd>${cfg.lardi.claims}</dd></div>
+        </dl>
+        <p class="rep-meta">${t.reputation.since} ${cfg.lardi.since} · ${t.reputation.asOf} ${esc(cfg.lardi.asOf)}</p>
+      </div>
+      <div class="rep-body reveal">
+        <p class="eyebrow">${t.reputation.eyebrow}</p>
+        <h2 id="rep-title" class="h2">${t.reputation.title}</h2>
+        <p class="section-text">${t.reputation.text}</p>
+        ${cfg.lardiTransUrl ? `<a class="btn btn--dark" href="${esc(cfg.lardiTransUrl)}responses/?scopeType=POSITIVE" target="_blank" rel="noopener">${t.reputation.button}${icon('external')}</a>` : ''}
+      </div>
     </div>
-    <div class="rep-body reveal">
-      <p class="eyebrow">${t.reputation.eyebrow}</p>
-      <h2 id="rep-title" class="h2">${t.reputation.title}</h2>
-      <p class="rep-highlight"><strong>${esc(cfg.reviewsCount)}</strong> ${t.reputation.countLabel}</p>
-      <p class="section-text">${t.reputation.text}</p>
-      ${cfg.lardiTransUrl ? `<a class="btn btn--dark" href="${esc(cfg.lardiTransUrl)}" target="_blank" rel="noopener">${t.reputation.button}${icon('external')}</a>` : ''}
-    </div>
+    <ul class="review-grid" data-reviews data-source="${esc(t.reputation.source)}" data-href="${esc(cfg.lardiTransUrl ? cfg.lardiTransUrl + 'responses/?scopeType=POSITIVE' : '')}">
+      ${DEFAULT_REVIEWS.map((r) => reviewCard(r, t, cfg)).join('')}
+    </ul>
+    <p class="review-more"><button class="btn btn--ghost-dark" type="button" data-reviews-more hidden>${t.reputation.more}</button></p>
   </div>
 </section>
 

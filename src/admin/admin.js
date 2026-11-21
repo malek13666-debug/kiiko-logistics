@@ -28,6 +28,8 @@
     loginBox.hidden = true; editor.hidden = false; logout.hidden = false;
     api('/api/admin/team').then(function (d) { members = d.members.map(function (m) { return Object.assign({}, m); }); render(); })
       .catch(function (e) { say(msg, e.message, 'error'); });
+    api('/api/admin/reviews').then(function (d) { reviews = d.reviews.map(function (r) { return Object.assign({}, r); }); renderRev(); })
+      .catch(function (e) { say(revMsg, e.message, 'error'); });
   }
   function doLogout() { try { sessionStorage.removeItem(KEY); } catch (e) {} location.reload(); }
 
@@ -115,6 +117,38 @@
       .catch(function (e) { if (e.message !== 'role') say(msg, e.message, 'error'); })
       .finally(function () { node.classList.remove('is-busy'); });
   }
+
+  /* ---------- Відгуки ---------- */
+  var reviews = [];
+  var revList = $('[data-rev-list]'), revMsg = $('[data-rev-msg]'), revTpl = document.getElementById('review-tpl');
+  var RF = ['author', 'city', 'route', 'countries', 'date', 'text'];
+  function readRev() {
+    revList.querySelectorAll('.adm-card').forEach(function (card, i) { RF.forEach(function (f) { reviews[i][f] = card.querySelector('[name=' + f + ']').value.trim(); }); });
+  }
+  function changed() { dirty = true; say(revMsg, 'Є незбережені зміни'); }
+  function renderRev() {
+    revList.innerHTML = '';
+    reviews.forEach(function (r, i) {
+      var node = revTpl.content.firstElementChild.cloneNode(true);
+      RF.forEach(function (f) { var el = node.querySelector('[name=' + f + ']'); el.value = r[f] || ''; el.addEventListener('input', changed); });
+      node.querySelector('[data-up]').addEventListener('click', function () { if (i > 0) { readRev(); reviews.splice(i - 1, 0, reviews.splice(i, 1)[0]); renderRev(); changed(); } });
+      node.querySelector('[data-down]').addEventListener('click', function () { if (i < reviews.length - 1) { readRev(); reviews.splice(i + 1, 0, reviews.splice(i, 1)[0]); renderRev(); changed(); } });
+      node.querySelector('[data-remove]').addEventListener('click', function () {
+        if (!window.confirm('Видалити відгук «' + (r.author || '') + '»? Зміна застосується після збереження.')) return;
+        readRev(); reviews.splice(i, 1); renderRev(); changed();
+      });
+      revList.appendChild(node);
+    });
+  }
+  $('[data-rev-add]').addEventListener('click', function () { readRev(); reviews.unshift({ id: 'r' + Date.now().toString(36), author: '', text: '' }); renderRev(); changed(); revList.firstElementChild.querySelector('[name=author]').focus(); });
+  $('[data-rev-save]').addEventListener('click', function () {
+    readRev();
+    for (var i = 0; i < reviews.length; i++) if (!reviews[i].author || !reviews[i].text) { say(revMsg, 'У кожного відгуку мають бути автор і текст', 'error'); return; }
+    say(revMsg, 'Зберігаємо…');
+    api('/api/admin/reviews', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reviews: reviews }) })
+      .then(function (d) { reviews = d.reviews; dirty = false; renderRev(); say(revMsg, 'Відгуки збережено. На сайті — протягом хвилини.', 'ok'); })
+      .catch(function (e) { say(revMsg, e.message, 'error'); });
+  });
 
   window.addEventListener('beforeunload', function (e) { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 

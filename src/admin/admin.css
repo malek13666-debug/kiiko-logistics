@@ -31,3 +31,8 @@ code { font-family: var(--font-mono); font-size: .9em; background: var(--paper-2
   .adm-fields { grid-template-columns: 1fr; }
   .adm-photo img, .adm-nophoto { width: 160px; }
 }
+.adm-head--sep { margin-top: 64px; padding-top: 40px; border-top: 1px solid var(--line); }
+.adm-card--rev { grid-template-columns: 1fr; }
+.adm-card--rev .adm-fields { grid-template-columns: 2fr 1fr 1.5fr 1fr 1fr; }
+.adm-wide { grid-column: 1 / -1; }
+@media (max-width: 900px) { .adm-card--rev .adm-fields { grid-template-columns: 1fr 1fr; } }
