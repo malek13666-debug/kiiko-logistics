@@ -46,17 +46,17 @@ export default {
    */
   images: {
     hero: {
-      src: 'https://images.unsplash.com/photo-1590164948562-8e412aa9e62b',
+      src: 'https://images.unsplash.com/photo-1695222833131-54ee679ae8e5',
       unsplash: true,
-      alt: 'Вантажний автомобіль на автомагістралі серед лісу',
-      credit: 'Фото: zibik / Unsplash',
+      alt: 'Тягач із напівпричепом рухається трасою',
+      credit: 'Фото: Artem Balashevsky / Unsplash',
       illustrative: true,
     },
     fleet: {
-      src: 'https://images.unsplash.com/photo-1741495515999-0567609a236e',
+      src: 'https://images.unsplash.com/photo-1780172168745-2dac9174eb88',
       unsplash: true,
-      alt: 'Сідельні тягачі, що стоять у ряд',
-      credit: 'Фото: Sijmen van Hooff / Unsplash',
+      alt: 'Сідельний тягач із напівпричепом на майданчику',
+      credit: 'Фото: Dexter Studio / Unsplash',
       illustrative: true,
     },
   },
