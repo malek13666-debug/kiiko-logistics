@@ -3,11 +3,11 @@ import { readFileSync } from 'node:fs';
 
 const data = JSON.parse(readFileSync(new URL('../data/europe-map.json', import.meta.url), 'utf8'));
 
-const DEST = ['PL', 'DE', 'CZ', 'SK', 'HU', 'RO', 'MD', 'BG', 'SI', 'IT', 'CH', 'FR', 'ES', 'PT', 'BE', 'NL', 'DK', 'LT', 'LV', 'EE', 'FI'];
+const DEST = ['PL', 'DE', 'CZ', 'SK', 'AT', 'HU', 'RO', 'MD', 'BG', 'SI', 'IT', 'CH', 'FR', 'ES', 'PT', 'BE', 'NL', 'DK', 'LT', 'LV', 'EE', 'FI'];
 // Зміщення підписів відносно точки: [dx, dy, anchor]
 const LABEL = {
   PL: [0, -16, 'middle'], DE: [0, -16, 'middle'], CZ: [-12, -10, 'end'], SK: [4, -14, 'middle'],
-  HU: [14, 5, 'start'], RO: [14, 5, 'start'], MD: [14, 5, 'start'], BG: [0, 26, 'middle'],
+  HU: [14, 5, 'start'], AT: [-14, 5, 'end'], RO: [14, 5, 'start'], MD: [14, 5, 'start'], BG: [0, 26, 'middle'],
   SI: [0, 26, 'middle'], IT: [-14, 5, 'end'], CH: [0, 28, 'middle'], FR: [-14, 5, 'end'],
   ES: [14, 5, 'start'], PT: [-8, 26, 'start'], BE: [-14, 5, 'end'], NL: [-14, 5, 'end'],
   DK: [-14, 5, 'end'], LT: [14, 5, 'start'], LV: [14, 5, 'start'], EE: [14, 5, 'start'], FI: [14, 5, 'start'],
