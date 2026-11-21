@@ -1,0 +1,8 @@
+# Скопіюйте у .dev.vars для локального тестування (файл не потрапляє в git).
+# У продакшені ці значення задаються в Cloudflare → Pages → Settings → Variables and Secrets.
+TURNSTILE_SECRET_KEY=
+RESEND_API_KEY=
+MAIL_TO=
+MAIL_FROM=KIIKO <noreply@your-domain.ua>
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=

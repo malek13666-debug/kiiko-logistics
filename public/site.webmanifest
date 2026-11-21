@@ -1,0 +1,13 @@
+{
+  "name": "KIIKO — міжнародні вантажні перевезення",
+  "short_name": "KIIKO",
+  "lang": "uk",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#0b1522",
+  "theme_color": "#0b1522",
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any" },
+    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ]
+}
